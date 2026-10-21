@@ -65,7 +65,8 @@ extension NiriLayoutHandler {
                         engine: engine
                     )
                 ),
-                state: &state
+                state: &state,
+                keepsMostlyVisibleViewport: true
             )
         }
 

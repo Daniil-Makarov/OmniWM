@@ -126,7 +126,8 @@ extension SettingsExport.Niri {
             resizeStepPercent: BuiltInSettingsDefaults.niriResizeStepPercent,
             moveWindowStacksIntoColumn: true,
             allowOverscroll: false,
-            overscrollVisibleStripPercent: 5
+            overscrollVisibleStripPercent: 5,
+            keepViewportMinVisible: 1.0
         )
     }
 }

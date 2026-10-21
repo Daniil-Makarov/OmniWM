@@ -118,6 +118,7 @@ struct SettingsExport: Equatable {
         var moveWindowStacksIntoColumn: Bool?
         var allowOverscroll: Bool?
         var overscrollVisibleStripPercent: Int?
+        var keepViewportMinVisible: Double?
     }
 
     struct Dwindle: Codable, Equatable {

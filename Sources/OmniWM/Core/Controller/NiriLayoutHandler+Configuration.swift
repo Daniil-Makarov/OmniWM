@@ -81,7 +81,8 @@ extension NiriLayoutHandler {
         singleWindowFit: SingleWindowFit? = nil,
         edgeOverscroll: NiriEdgeOverscroll? = nil,
         containerPrimarySpanPresets: [Double]? = nil,
-        defaultContainerPrimarySpan: Double?? = nil
+        defaultContainerPrimarySpan: Double?? = nil,
+        keepViewportMinVisible: Double? = nil
     ) {
         guard let controller else { return }
         controller.workspaceManager.withEngineMutationScope {
@@ -93,7 +94,8 @@ extension NiriLayoutHandler {
                 singleWindowFit: singleWindowFit,
                 edgeOverscroll: edgeOverscroll,
                 presetContainerPrimarySpans: containerPrimarySpanPresets?.map { .proportion($0) },
-                defaultContainerPrimarySpan: defaultContainerPrimarySpan.map { $0.map { CGFloat($0) } }
+                defaultContainerPrimarySpan: defaultContainerPrimarySpan.map { $0.map { CGFloat($0) } },
+                keepViewportMinVisible: keepViewportMinVisible.map { CGFloat($0) }
             )
         }
         refreshResolvedMonitorSettings(rebalanceChangedSpans: defaultContainerPrimarySpan != nil)
