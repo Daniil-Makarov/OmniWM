@@ -126,7 +126,8 @@ extension WindowActionHandler {
                         ),
                         state: &targetState,
                         animationConfig: nil,
-                        fromContainerIndex: nil
+                        fromContainerIndex: nil,
+                        keepsMostlyVisibleViewport: true
                     )
                 }
             }

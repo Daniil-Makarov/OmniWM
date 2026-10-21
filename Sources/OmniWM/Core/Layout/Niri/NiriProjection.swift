@@ -270,7 +270,8 @@ extension NiriLayoutEngine {
         state: inout ViewportState,
         animationConfig: SpringConfig?,
         fromContainerIndex: Int?,
-        previousProjectedAnchor: NiriProjectedViewportAnchor? = nil
+        previousProjectedAnchor: NiriProjectedViewportAnchor? = nil,
+        keepsMostlyVisibleViewport: Bool = false
     ) {
         let projectedColumns = projectedColumns(in: context.workspaceId)
         guard !projectedColumns.isEmpty,
@@ -315,7 +316,8 @@ extension NiriLayoutEngine {
                 animationConfig: animationConfig,
                 fromContainerIndex: projectedFromIndex,
                 scale: displayScale(in: context.workspaceId),
-                viewFrame: monitorForWorkspace(context.workspaceId)?.frame
+                viewFrame: monitorForWorkspace(context.workspaceId)?.frame,
+                minimumVisibleFraction: keepsMostlyVisibleViewport ? keepViewportMinVisible : 1
             )
             state = projectedState
             state.activeColumnIndex = projectedColumns[targetProjectedIndex].durableIndex

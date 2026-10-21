@@ -215,7 +215,8 @@ extension NiriLayoutEngine {
                 state: &state,
                 animationConfig: animationConfig,
                 fromContainerIndex: fromContainerIndex,
-                previousProjectedAnchor: previousProjectedAnchor
+                previousProjectedAnchor: previousProjectedAnchor,
+                keepsMostlyVisibleViewport: keepsMostlyVisibleViewport
             )
             return
         }
@@ -227,13 +228,10 @@ extension NiriLayoutEngine {
             motion: context.motion
         )
         let containers = columns(in: context.workspaceId)
-        guard !containers.isEmpty else { return }
-
-        guard let container = column(of: node),
+        guard !containers.isEmpty,
+              let container = column(of: node),
               let targetIdx = columnIndex(of: container, in: context.workspaceId)
-        else {
-            return
-        }
+        else { return }
 
         let prevIdx = fromContainerIndex ?? state.activeColumnIndex
 

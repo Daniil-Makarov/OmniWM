@@ -366,7 +366,8 @@ extension NiriLayoutHandler {
                     node: selectedNode,
                     context: pass.interactionContext,
                     state: &state,
-                    fromContainerIndex: removal.removalResult.fromIndexForVisibility
+                    fromContainerIndex: removal.removalResult.fromIndexForVisibility,
+                    keepsMostlyVisibleViewport: removal.removalResult.fromIndexForVisibility == nil
                 )
             } else {
                 pass.engine.ensureProjectedSelectionVisible(
@@ -374,7 +375,8 @@ extension NiriLayoutHandler {
                     context: pass.interactionContext,
                     state: &state,
                     animationConfig: nil,
-                    fromContainerIndex: removal.removalResult.fromIndexForVisibility
+                    fromContainerIndex: removal.removalResult.fromIndexForVisibility,
+                    keepsMostlyVisibleViewport: removal.removalResult.fromIndexForVisibility == nil
                 )
             }
             let liveOffsetDelta = state.hasPendingOffsetAnimation

@@ -132,6 +132,31 @@ final class NiriKeepViewportMinVisibleTests: XCTestCase {
         XCTAssertEqual(moved.viewStart, 22, accuracy: 0.001)
     }
 
+    func testProjectedSelectionKeepsViewportForMostlyVisibleColumn() {
+        var kept = Fixture()
+        kept.engine.updateConfiguration(keepViewportMinVisible: 0.9)
+        kept.engine.ensureProjectedSelectionVisible(
+            node: kept.windows[1],
+            context: kept.context,
+            state: &kept.state,
+            animationConfig: nil,
+            fromContainerIndex: nil,
+            keepsMostlyVisibleViewport: true
+        )
+        XCTAssertEqual(kept.state.activeColumnIndex, 1)
+        XCTAssertEqual(kept.viewStart, 0, accuracy: 0.001)
+
+        var fitted = Fixture()
+        fitted.engine.ensureProjectedSelectionVisible(
+            node: fitted.windows[1],
+            context: fitted.context,
+            state: &fitted.state,
+            animationConfig: nil,
+            fromContainerIndex: nil
+        )
+        XCTAssertEqual(fitted.viewStart, 22, accuracy: 0.001)
+    }
+
     func testSettingDefaultsToFullVisibilityAndClampsDecodedValues() throws {
         let canonical = try XCTUnwrap(String(data: SettingsTOMLCodec.encode(.defaults()), encoding: .utf8))
         XCTAssertTrue(canonical.contains("keepViewportMinVisible = 1.0"))
