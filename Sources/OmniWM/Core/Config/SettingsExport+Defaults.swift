@@ -77,7 +77,8 @@ extension SettingsExport.Focus {
             moveMouseToFocusedWindow: false,
             followsWindowToMonitor: false,
             crossesMonitorAtEdge: false,
-            moveCrossesMonitorAtEdge: false
+            moveCrossesMonitorAtEdge: false,
+            followsAppActivation: true
         )
     }
 }

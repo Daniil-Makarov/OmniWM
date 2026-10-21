@@ -304,11 +304,16 @@ extension AXEventHandler {
         isWorkspaceActive: Bool,
         activation: PendingFocusedManagedActivation
     ) {
-        if shouldHonorObservedFocusOverPendingRequest(
-            observedToken: entry.token,
-            source: activation.source,
-            origin: activation.origin
-        ) {
+        if !suppressesActivationOutsideVisibleWorkspaces(
+            origin: activation.origin,
+            isWorkspaceActive: isWorkspaceActive
+        ),
+            shouldHonorObservedFocusOverPendingRequest(
+                observedToken: entry.token,
+                source: activation.source,
+                origin: activation.origin
+            )
+        {
             clearManagedFocusState(
                 matching: request.token,
                 workspaceId: request.workspaceId
@@ -344,6 +349,13 @@ extension AXEventHandler {
            controller.workspaceManager.externalFocusToken != entry.token,
            frontmostApplicationPIDProvider() != entry.pid
         {
+            return false
+        }
+        if suppressesActivationOutsideVisibleWorkspaces(
+            origin: activation.origin,
+            isWorkspaceActive: isWorkspaceActive
+        ) {
+            restoreFocusAfterSuppressedActivation()
             return false
         }
         return shouldHandleObservedManagedActivationWithoutPendingRequest(

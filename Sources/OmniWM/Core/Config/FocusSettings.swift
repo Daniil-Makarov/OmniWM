@@ -67,6 +67,10 @@ final class FocusSettings {
         didSet { onChange?() }
     }
 
+    var followsAppActivation = FocusSettings.defaults.followsAppActivation {
+        didSet { onChange?() }
+    }
+
     func export() -> SettingsExport.Focus {
         SettingsExport.Focus(
             followsMouse: followsMouse,
@@ -78,7 +82,8 @@ final class FocusSettings {
             moveMouseToFocusedWindow: moveMouseToFocusedWindow,
             followsWindowToMonitor: followsWindowToMonitor,
             crossesMonitorAtEdge: crossesMonitorAtEdge,
-            moveCrossesMonitorAtEdge: moveCrossesMonitorAtEdge
+            moveCrossesMonitorAtEdge: moveCrossesMonitorAtEdge,
+            followsAppActivation: followsAppActivation
         )
     }
 
@@ -93,5 +98,6 @@ final class FocusSettings {
         followsWindowToMonitor = focus.followsWindowToMonitor
         crossesMonitorAtEdge = focus.crossesMonitorAtEdge
         moveCrossesMonitorAtEdge = focus.moveCrossesMonitorAtEdge
+        followsAppActivation = focus.followsAppActivation
     }
 }
