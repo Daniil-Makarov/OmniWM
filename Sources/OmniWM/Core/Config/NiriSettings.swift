@@ -70,6 +70,19 @@ final class NiriSettings {
         didSet { onChange?() }
     }
 
+    var keepViewportMinVisible = NiriSettings.validatedKeepViewportMinVisible(
+        NiriSettings.defaults.keepViewportMinVisible
+    ) {
+        didSet {
+            let validated = NiriSettings.validatedKeepViewportMinVisible(keepViewportMinVisible)
+            if validated != keepViewportMinVisible {
+                keepViewportMinVisible = validated
+                return
+            }
+            onChange?()
+        }
+    }
+
     var monitorOverrides: [MonitorNiriSettings] = [] {
         didSet { onChange?() }
     }
@@ -85,7 +98,8 @@ final class NiriSettings {
             defaultContainerPrimarySpan: defaultContainerPrimarySpan,
             edgeGaps: edgeGaps,
             resizeStepPercent: resizeStepPercent,
-            moveWindowStacksIntoColumn: moveWindowStacksIntoColumn
+            moveWindowStacksIntoColumn: moveWindowStacksIntoColumn,
+            keepViewportMinVisible: keepViewportMinVisible
         )
     }
 
@@ -97,6 +111,9 @@ final class NiriSettings {
         singleWindowFit = niri.singleWindowFit
         edgeGaps = niri.edgeGaps ?? baseline.edgeGaps ?? true
         moveWindowStacksIntoColumn = niri.moveWindowStacksIntoColumn ?? baseline.moveWindowStacksIntoColumn ?? true
+        keepViewportMinVisible = NiriSettings.validatedKeepViewportMinVisible(
+            niri.keepViewportMinVisible ?? baseline.keepViewportMinVisible
+        )
         resizeStepPercent = niri.resizeStepPercent ?? baseline.resizeStepPercent ?? BuiltInSettingsDefaults
             .niriResizeStepPercent
         containerPrimarySpanPresets = NiriSettings.validatedContainerPrimarySpanPresets(
@@ -153,5 +170,10 @@ final class NiriSettings {
     static func validatedDefaultContainerPrimarySpan(_ width: Double?) -> Double? {
         guard let width else { return nil }
         return min(1.0, max(0.05, width))
+    }
+
+    static func validatedKeepViewportMinVisible(_ fraction: Double?) -> Double {
+        guard let fraction, fraction.isFinite else { return 1.0 }
+        return min(1.0, max(0.0, fraction))
     }
 }

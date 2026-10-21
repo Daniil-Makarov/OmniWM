@@ -33,7 +33,8 @@ extension NiriLayoutEngine {
             ensureSelectionVisible(
                 node: target,
                 context: context,
-                state: &state
+                state: &state,
+                keepsMostlyVisibleViewport: true
             )
         }
         return target
@@ -55,7 +56,8 @@ extension NiriLayoutEngine {
             ensureSelectionVisible(
                 node: target,
                 context: context,
-                state: &state
+                state: &state,
+                keepsMostlyVisibleViewport: true
             )
             return target
         }
@@ -126,7 +128,8 @@ extension NiriLayoutEngine {
         ensureSelectionVisible(
             node: target,
             context: context,
-            state: &state
+            state: &state,
+            keepsMostlyVisibleViewport: true
         )
         return target
     }
@@ -233,7 +236,8 @@ extension NiriLayoutEngine {
             ensureSelectionVisible(
                 node: target,
                 context: context,
-                state: &state
+                state: &state,
+                keepsMostlyVisibleViewport: true
             )
             return target
         }
@@ -259,7 +263,8 @@ extension NiriLayoutEngine {
             ensureSelectionVisible(
                 node: target,
                 context: context,
-                state: &state
+                state: &state,
+                keepsMostlyVisibleViewport: true
             )
             return target
         }
@@ -311,7 +316,8 @@ extension NiriLayoutEngine {
         ensureSelectionVisible(
             node: target,
             context: context,
-            state: &state
+            state: &state,
+            keepsMostlyVisibleViewport: true
         )
         return target
     }
@@ -336,7 +342,8 @@ extension NiriLayoutEngine {
         ensureSelectionVisible(
             node: previousWindow,
             context: context,
-            state: &state
+            state: &state,
+            keepsMostlyVisibleViewport: true
         )
 
         return previousWindow

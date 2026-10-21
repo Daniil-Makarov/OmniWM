@@ -108,7 +108,8 @@ extension NiriLayoutEngine {
         ensureSelectionVisible(
             node: newSelection,
             context: context,
-            state: &state
+            state: &state,
+            keepsMostlyVisibleViewport: true
         )
 
         return newSelection
@@ -203,7 +204,8 @@ extension NiriLayoutEngine {
         animationConfig: SpringConfig? = nil,
         fromContainerIndex: Int? = nil,
         previousActiveContainerPosition: CGFloat? = nil,
-        previousProjectedAnchor: NiriProjectedViewportAnchor? = nil
+        previousProjectedAnchor: NiriProjectedViewportAnchor? = nil,
+        keepsMostlyVisibleViewport: Bool = false
     ) {
         assertSanctionedMutation()
         if !projectionExclusions(in: context.workspaceId).isEmpty {
@@ -256,7 +258,8 @@ extension NiriLayoutEngine {
             animationConfig: animationConfig,
             fromContainerIndex: prevIdx,
             scale: scale,
-            viewFrame: viewFrame
+            viewFrame: viewFrame,
+            minimumVisibleFraction: keepsMostlyVisibleViewport ? keepViewportMinVisible : 1
         )
     }
 

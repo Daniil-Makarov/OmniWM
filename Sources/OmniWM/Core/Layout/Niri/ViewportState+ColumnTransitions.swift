@@ -86,7 +86,8 @@ extension ViewportState {
         animationConfig: SpringConfig? = nil,
         fromContainerIndex: Int? = nil,
         scale: CGFloat = 2.0,
-        viewFrame: CGRect? = nil
+        viewFrame: CGRect? = nil,
+        minimumVisibleFraction: CGFloat = 1
     ) {
         guard !containers.isEmpty, containerIndex >= 0, containerIndex < containers.count else { return }
 
@@ -100,6 +101,17 @@ extension ViewportState {
         )
         let stationaryViewStart = activePos + stationaryOffset
         let pixelEpsilon: CGFloat = 1.0 / max(scale, 1.0)
+
+        if minimumVisibleFraction < 1, centerMode != .always,
+           visibleFraction(
+               ofContainerAt: containerIndex,
+               containers: containers,
+               context: context,
+               viewStart: stationaryViewStart
+           ) >= minimumVisibleFraction
+        {
+            return
+        }
 
         let targetOffset = computeVisibleOffset(
             containerIndex: containerIndex,
@@ -131,6 +143,28 @@ extension ViewportState {
 }
 
 extension ViewportState {
+    func visibleFraction(
+        ofContainerAt containerIndex: Int,
+        containers: [NiriContainer],
+        context: NiriInteractionContext,
+        viewStart: CGFloat
+    ) -> CGFloat {
+        let sizeKeyPath = context.orientation.settledSpanKeyPath
+        let span = containers[containerIndex][keyPath: sizeKeyPath]
+        guard span > 0 else { return 0 }
+        let start = containerPosition(
+            at: containerIndex,
+            containers: containers,
+            gap: context.gaps,
+            sizeKeyPath: sizeKeyPath
+        )
+        let viewportSpan = context.orientation == .horizontal
+            ? context.workingFrame.width
+            : context.workingFrame.height
+        let visibleSpan = min(start + span, viewStart + viewportSpan) - max(start, viewStart)
+        return max(0, visibleSpan) / span
+    }
+
     mutating func retargetColumn(
         to targetIndex: Int,
         columns: [NiriContainer],

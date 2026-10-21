@@ -168,6 +168,7 @@ Options for the scrolling (Niri) layout.
 | `resizeStepPercent` *(optional)* | integer | `5` | Increment for Niri grow/shrink actions in percentage points, clamped to 1–100. Applies to container primary, window primary, and window secondary spans. Explicit CLI sizes are unaffected. |
 | `edgeGaps` *(optional)* | boolean | `true` | Keeps the inner gap between columns and the screen edges, in addition to the outer gaps. `false` uses the inner gap only between columns and between stacked windows. A lone window is unaffected. |
 | `moveWindowStacksIntoColumn` *(optional)* | boolean | `true` | Moving a lone window left or right stacks it into the adjacent column. `false` swaps its column with the adjacent one instead. A window that shares a column still moves out into its own column. |
+| `keepViewportMinVisible` *(optional)* | float | `1.0` | Fraction of a column, `0.0`–`1.0`, that must already be on screen for focusing it to leave the strip where it is. Applies to keyboard focus commands, clicks and app activation; moving, resizing and opening windows still scroll the column fully into view, and `centerFocusedColumn = "always"` still centers. `1.0` keeps the previous behavior. Useful when two columns are slightly wider than half the screen, for example apps with a large minimum width. |
 
 The resize increment defaults to 5% instead of the previous fixed 10%.
 

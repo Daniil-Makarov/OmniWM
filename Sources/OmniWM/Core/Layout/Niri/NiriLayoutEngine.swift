@@ -35,6 +35,8 @@ final class NiriLayoutEngine {
 
     var alwaysCenterSingleColumn: Bool = false
 
+    var keepViewportMinVisible: CGFloat = 1
+
     var singleWindowFit: SingleWindowFit = .fullScreen
 
     var renderStyle: NiriRenderStyle = .default
@@ -251,7 +253,8 @@ final class NiriLayoutEngine {
         alwaysCenterSingleColumn: Bool? = nil,
         singleWindowFit: SingleWindowFit? = nil,
         presetContainerPrimarySpans: [PresetSize]? = nil,
-        defaultContainerPrimarySpan: CGFloat?? = nil
+        defaultContainerPrimarySpan: CGFloat?? = nil,
+        keepViewportMinVisible: CGFloat? = nil
     ) {
         assertSanctionedMutation()
         if let max = visibleContainerCount {
@@ -268,6 +271,9 @@ final class NiriLayoutEngine {
         }
         if let singleWindowFit {
             self.singleWindowFit = singleWindowFit
+        }
+        if let keepViewportMinVisible {
+            self.keepViewportMinVisible = keepViewportMinVisible.clamped(to: 0 ... 1)
         }
         // Double optional distinguishes "no config change" from "set Auto/nil".
         if let defaultContainerPrimarySpan {
