@@ -225,6 +225,31 @@ extension AXEventHandler {
         }
     }
 
+    func suppressesActivationOutsideVisibleWorkspaces(
+        origin: ActivationCallOrigin,
+        isWorkspaceActive: Bool
+    ) -> Bool {
+        guard !isWorkspaceActive, origin == .external, let controller else { return false }
+        return !controller.settings.focus.followsAppActivation
+    }
+
+    func restoreFocusAfterSuppressedActivation() {
+        guard let controller else { return }
+        let manager = controller.workspaceManager
+        if let selected = manager.selectedManagedToken,
+           let workspaceId = manager.entry(for: selected)?.workspaceId,
+           manager.visibleWorkspaceIds().contains(workspaceId)
+        {
+            controller.focusWindow(selected, origin: .pointerHover)
+            return
+        }
+        guard let monitorId = manager.interactionMonitorId,
+              let workspaceId = manager.activeWorkspace(on: monitorId)?.id,
+              let token = manager.resolveWorkspaceFocusToken(in: workspaceId)
+        else { return }
+        controller.focusWindow(token, origin: .pointerHover)
+    }
+
     func shouldHonorObservedFocusOverPendingRequest(
         observedToken: WindowToken?,
         source: ActivationEventSource,

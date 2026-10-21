@@ -271,11 +271,13 @@ extension AXEventHandler {
         case .matchesActiveRequest:
             break
         case let .conflictsWithPendingRequest(request):
-            if shouldHonorObservedFocusOverPendingRequest(
-                observedToken: token,
-                source: source,
-                origin: origin
-            ) {
+            if !suppressesActivationOutsideVisibleWorkspaces(origin: origin, isWorkspaceActive: isWorkspaceActive),
+               shouldHonorObservedFocusOverPendingRequest(
+                   observedToken: token,
+                   source: source,
+                   origin: origin
+               )
+            {
                 clearManagedFocusState(
                     matching: request.token,
                     workspaceId: request.workspaceId
@@ -290,6 +292,10 @@ extension AXEventHandler {
             )
             return false
         case .unrelatedNoRequest:
+            if suppressesActivationOutsideVisibleWorkspaces(origin: origin, isWorkspaceActive: isWorkspaceActive) {
+                restoreFocusAfterSuppressedActivation()
+                return false
+            }
             guard shouldHandleObservedManagedActivationWithoutPendingRequest(
                 source: source,
                 origin: origin,

@@ -66,6 +66,7 @@ Pointer-driven focus and monitor-edge focus/move behavior.
 | `followsWindowToMonitor` | boolean | `false` | Follows ordinary window or column transfers to another workspace, including dedicated monitor-move actions. Edge-crossing moves always follow. |
 | `crossesMonitorAtEdge` | boolean | `false` | Directional focus continues onto the neighboring monitor at the screen edge. |
 | `moveCrossesMonitorAtEdge` | boolean | `false` | Directional window move continues onto the neighboring monitor at the workspace edge and always follows the moved window. |
+| `followsAppActivation` *(optional)* | boolean | `true` | Switches to the workspace of a window whose app becomes active outside OmniWM: the app bringing itself forward, a Dock click, Command-Tab or a notification. `false` keeps the current workspace and returns focus to the window you were using, like Hyprland's `misc:focus_on_activate = false`; OmniWM's own focus commands, the workspace bar and Overview still switch. |
 
 ## mouseWarp
 
