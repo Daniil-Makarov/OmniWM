@@ -5,6 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEV_APP_NAME="${OMNIWM_DEV_APP_NAME:-OmniWM Dev}"
 DEV_BUNDLE_ID="com.barut.OmniWM.dev"
 DEV_IDENTITY="${OMNIWM_SIGNING_IDENTITY:-OmniWM Dev}"
+DEV_BUILD_CONFIG="${OMNIWM_DEV_BUILD_CONFIG:-release}"
 INSTALL_DIR="${OMNIWM_DEV_INSTALL_DIR:-$HOME/Applications}"
 RELEASE_APP="${OMNIWM_RELEASE_APP:-/Applications/OmniWM.app}"
 RELEASE_BUNDLE_ID="com.barut.OmniWM"
@@ -21,6 +22,10 @@ usage() {
 }
 
 validate_destination() {
+  case "$DEV_BUILD_CONFIG" in
+    debug|release) ;;
+    *) fail "OMNIWM_DEV_BUILD_CONFIG must be debug or release" ;;
+  esac
   case "$DEV_APP_NAME" in
     ''|.|..|*/*) fail "the development app name must be a single directory name" ;;
   esac
@@ -108,7 +113,7 @@ install_dev() {
   OMNIWM_APP_NAME="$DEV_APP_NAME" \
   OMNIWM_BUNDLE_ID="$DEV_BUNDLE_ID" \
   OMNIWM_SIGNING_IDENTITY="$DEV_IDENTITY" \
-    "$ROOT_DIR/Scripts/package-app.sh" debug dev
+    "$ROOT_DIR/Scripts/package-app.sh" "$DEV_BUILD_CONFIG" dev
 
   quit_other_copies >/dev/null
   wait_for_no_other_omniwm
