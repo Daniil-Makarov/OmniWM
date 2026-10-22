@@ -79,6 +79,7 @@ struct SettingsExport: Equatable {
         var crossesMonitorAtEdge: Bool
         var moveCrossesMonitorAtEdge: Bool
         var followsAppActivation: Bool
+        var edgeHoverNavigation: Bool
     }
 
     struct MouseWarp: Codable, Equatable {
@@ -293,5 +294,7 @@ extension SettingsExport.Focus {
         moveCrossesMonitorAtEdge = try container.decode(Bool.self, forKey: .moveCrossesMonitorAtEdge)
         followsAppActivation = try container.decodeIfPresent(Bool.self, forKey: .followsAppActivation)
             ?? Self.defaults().followsAppActivation
+        edgeHoverNavigation = try container.decodeIfPresent(Bool.self, forKey: .edgeHoverNavigation)
+            ?? Self.defaults().edgeHoverNavigation
     }
 }

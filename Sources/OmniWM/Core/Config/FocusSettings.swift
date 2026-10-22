@@ -71,6 +71,10 @@ final class FocusSettings {
         didSet { onChange?() }
     }
 
+    var edgeHoverNavigation = FocusSettings.defaults.edgeHoverNavigation {
+        didSet { onChange?() }
+    }
+
     func export() -> SettingsExport.Focus {
         SettingsExport.Focus(
             followsMouse: followsMouse,
@@ -83,7 +87,8 @@ final class FocusSettings {
             followsWindowToMonitor: followsWindowToMonitor,
             crossesMonitorAtEdge: crossesMonitorAtEdge,
             moveCrossesMonitorAtEdge: moveCrossesMonitorAtEdge,
-            followsAppActivation: followsAppActivation
+            followsAppActivation: followsAppActivation,
+            edgeHoverNavigation: edgeHoverNavigation
         )
     }
 
@@ -99,5 +104,6 @@ final class FocusSettings {
         crossesMonitorAtEdge = focus.crossesMonitorAtEdge
         moveCrossesMonitorAtEdge = focus.moveCrossesMonitorAtEdge
         followsAppActivation = focus.followsAppActivation
+        edgeHoverNavigation = focus.edgeHoverNavigation
     }
 }
