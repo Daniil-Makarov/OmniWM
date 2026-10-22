@@ -174,7 +174,7 @@ struct WorldView {
                     ParkingEdgeNavigation(
                         workspaceId: workspace.id,
                         target: window.token,
-                        hoverEnabled: controller.focusFollowsMouseEnabled
+                        hoverEnabled: edgeHoverNavigationEnabled
                     )
                 } else {
                     nil
@@ -350,5 +350,11 @@ struct WorldView {
             return nil
         }
         return ScreenCoordinateSpace.toAppKit(rect: bounds)
+    }
+}
+
+extension WorldView {
+    var edgeHoverNavigationEnabled: Bool {
+        controller.focusFollowsMouseEnabled && controller.settings.focus.edgeHoverNavigation
     }
 }

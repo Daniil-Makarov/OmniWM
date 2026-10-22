@@ -21,7 +21,8 @@ final class FocusRoutingSettingsExportTests: XCTestCase {
             "followsWindowToMonitor": .boolean(false),
             "crossesMonitorAtEdge": .boolean(false),
             "moveCrossesMonitorAtEdge": .boolean(false),
-            "followsAppActivation": .boolean(true)
+            "followsAppActivation": .boolean(true),
+            "edgeHoverNavigation": .boolean(true)
         ]))
         XCTAssertEqual(tree["mouseWarp"], .table([
             "margin": .integer(1),

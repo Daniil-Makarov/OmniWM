@@ -164,6 +164,20 @@ final class ParkingEdgeNavigationTests: XCTestCase {
         }
     }
 
+    func testEdgeHoverNavigationCanBeTurnedOffWhileKeepingClickTargets() throws {
+        try withFixture { fixture in
+            fixture.controller.setFocusFollowsMouse(true)
+            fixture.controller.settings.focus.edgeHoverNavigation = false
+
+            let mask = try XCTUnwrap(WorldView(controller: fixture.controller).parkingEdgeMasks().first {
+                $0.key.monitorId == fixture.monitors[0].id && $0.key.side == .right
+            })
+
+            XCTAssertEqual(mask.navigation?.target, fixture.windows[0][1].token)
+            XCTAssertEqual(mask.navigation?.hoverEnabled, false)
+        }
+    }
+
     private func withFixture(
         orientation: Monitor.Orientation = .horizontal,
         _ body: (Fixture) throws -> Void
