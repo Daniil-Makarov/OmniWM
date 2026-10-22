@@ -18,6 +18,7 @@ class DevInstallTests(unittest.TestCase):
         shutil.copy2(source, self.script)
         self.write_command(
             scripts / "package-app.sh",
+            'printf "%s\\n" "$*" > "$OMNIWM_TEST_ROOT/package-args"\n'
             'mkdir -p "$OMNIWM_TEST_ROOT/dist/$OMNIWM_APP_NAME.app"\n'
             'printf built > "$OMNIWM_TEST_ROOT/dist/$OMNIWM_APP_NAME.app/new-build"\n',
         )
@@ -41,6 +42,7 @@ class DevInstallTests(unittest.TestCase):
             "XDG_CONFIG_HOME": str(self.config),
         }
         self.environment.pop("OMNIWM_DEV_APP_NAME", None)
+        self.environment.pop("OMNIWM_DEV_BUILD_CONFIG", None)
 
     @staticmethod
     def write_command(path, body):
@@ -55,6 +57,29 @@ class DevInstallTests(unittest.TestCase):
             capture_output=True,
             check=False,
         )
+
+    def test_dev_builds_use_release_configuration_by_default(self):
+        result = self.install()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.root / "package-args").read_text(), "release dev\n")
+
+    def test_dev_build_configuration_can_be_debug(self):
+        self.environment["OMNIWM_DEV_BUILD_CONFIG"] = "debug"
+
+        result = self.install()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.root / "package-args").read_text(), "debug dev\n")
+
+    def test_unknown_dev_build_configuration_is_rejected_before_building(self):
+        self.environment["OMNIWM_DEV_BUILD_CONFIG"] = "fast"
+
+        result = self.install()
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("OMNIWM_DEV_BUILD_CONFIG", result.stderr)
+        self.assertFalse((self.root / "package-args").exists())
 
     def test_shutdown_timeout_preserves_installation_and_settings(self):
         self.dev_app.mkdir(parents=True)

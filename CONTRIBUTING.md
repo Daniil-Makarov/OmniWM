@@ -63,6 +63,8 @@ On first launch, grant **Accessibility** and **Input Monitoring** to **OmniWM De
 
 Edit code in your preferred editor, then run `make run` again to rebuild. You can also launch the installed Dev app from Finder.
 
+`make run` builds Dev in the optimized release configuration. Set `OMNIWM_DEV_BUILD_CONFIG=debug` for a faster debug build with assertions enabled.
+
 ### 6. Verify and Open a Pull Request
 
 For app code changes, run:
