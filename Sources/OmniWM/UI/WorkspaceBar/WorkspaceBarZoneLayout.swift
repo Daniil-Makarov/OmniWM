@@ -20,6 +20,7 @@ struct WorkspaceBarZoneLayout: Layout {
         spacing: CGFloat,
         inset: CGFloat
     ) -> [CGFloat] {
+        let length = max(0, length - zones.trailingInset)
         var offsets = Array(repeating: CGFloat.zero, count: items.count)
         func extent(_ indices: ArraySlice<Int>) -> CGFloat {
             indices.reduce(0) { $0 + items[$1].length } + CGFloat(max(0, indices.count - 1)) * spacing

@@ -11,6 +11,9 @@ struct WorkspaceBarSplitLayout: Equatable {
 struct WorkspaceBarZones: Equatable {
     let notch: ClosedRange<CGFloat>?
     let mode: WorkspaceBarFullWidthNotchMode
+    /// Trailing stretch of the bar that sits under the camera housing: the background is drawn
+    /// there so no wallpaper shows beside the notch, but widgets are kept out of it.
+    var trailingInset: CGFloat = 0
 }
 
 struct WorkspaceBarSplitAvailableWidths: Equatable {
@@ -30,6 +33,9 @@ private struct WorkspaceBarSplitMetrics {
 struct WorkspaceBarGeometry: Equatable {
     static let cornerRadius: CGFloat = 8
     static let notchGap: CGFloat = 8
+    /// How far the Fill Left of Notch bar reaches under the camera housing, so its background meets
+    /// the notch's rounded lower corner instead of leaving a strip of wallpaper beside it.
+    static let fillLeftOfNotchMaxOverlap: CGFloat = 12
     static let minimumSplitSideSpace: CGFloat = 60
     static let minimumIslandWidth: CGFloat = 40
     let effectivePosition: WorkspaceBarPosition
@@ -125,7 +131,11 @@ struct WorkspaceBarGeometry: Equatable {
 
     func zones(frame: CGRect, monitor: Monitor, resolved: ResolvedBarSettings) -> WorkspaceBarZones? {
         if resolved.notchMode == .fillLeftOfNotch {
-            return WorkspaceBarZones(notch: nil, mode: resolved.fullWidthNotchMode)
+            return WorkspaceBarZones(
+                notch: nil,
+                mode: resolved.fullWidthNotchMode,
+                trailingInset: Self.fillLeftOfNotchOverlap(for: monitor)
+            )
         }
         guard resolved.fullWidth else { return nil }
         let notch = effectivePosition == .overlappingMenuBar && monitor.hasNotch ? monitor.notchRange : nil
@@ -193,11 +203,20 @@ struct WorkspaceBarGeometry: Equatable {
         return (activation.intersection(monitor.frame), retention.intersection(monitor.frame))
     }
 
+    /// Width of the Fill Left of Notch bar hidden under a physical notch; zero when there is no
+    /// camera housing to hide it, where the bar keeps its gap before the virtual midpoint.
+    static func fillLeftOfNotchOverlap(for monitor: Monitor) -> CGFloat {
+        guard monitor.hasNotch, let notch = monitor.notchRange else { return 0 }
+        return min(fillLeftOfNotchMaxOverlap, (notch.upperBound - notch.lowerBound) / 2)
+    }
+
     private func fillLeftOfNotchFrame(for monitor: Monitor) -> CGRect {
         let frame = monitor.frame
-        let virtualNotch = frame.midX ... frame.midX
-        let notch = monitor.hasNotch ? (monitor.notchRange ?? virtualNotch) : virtualNotch
-        let maxX = notch.lowerBound - Self.notchGap
+        let maxX = if monitor.hasNotch, let notch = monitor.notchRange {
+            notch.lowerBound + Self.fillLeftOfNotchOverlap(for: monitor)
+        } else {
+            frame.midX - Self.notchGap
+        }
         return CGRect(
             x: frame.minX,
             y: frame.maxY - menuBarHeight,

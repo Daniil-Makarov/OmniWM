@@ -52,6 +52,7 @@ final class WorkspaceBarInstance {
             geometry.splitAvailableWidths(monitor: monitor, resolved: resolved)?.secondary ?? monitor.frame.width
         } else if resolved.notchMode == .fillLeftOfNotch {
             geometry.frame(fittingLength: 0, monitor: monitor, resolved: resolved).width
+                - WorkspaceBarGeometry.fillLeftOfNotchOverlap(for: monitor)
         } else {
             geometry.availableWidth(monitor: monitor, resolved: resolved)
         }

@@ -126,11 +126,52 @@ final class WorkspaceBarFillLeftGeometryTests: XCTestCase {
         let zones = try XCTUnwrap(geometry.zones(frame: frame, monitor: monitor, resolved: resolved))
 
         XCTAssertNil(zones.notch)
+        XCTAssertEqual(zones.trailingInset, WorkspaceBarGeometry.fillLeftOfNotchMaxOverlap)
         XCTAssertNil(geometry.zones(
             frame: frame,
             monitor: monitor,
             resolved: makeResolved(notchMode: .moveBelowMenuBar)
         ))
+    }
+
+    func testFillLeftOfNotchReachesUnderTheCameraHousingWithoutPlacingWidgetsThere() throws {
+        let monitor = makeMonitor(
+            frame: CGRect(x: 0, y: 0, width: 1728, height: 1117),
+            visibleTop: 1085,
+            notchRange: 771.5 ... 956.5
+        )
+        let resolved = makeResolved(notchMode: .fillLeftOfNotch)
+        let geometry = WorkspaceBarGeometry.resolve(monitor: monitor, resolved: resolved, isVisible: true)
+        let frame = geometry.frame(fittingLength: 200, monitor: monitor, resolved: resolved)
+        let zones = try XCTUnwrap(geometry.zones(frame: frame, monitor: monitor, resolved: resolved))
+
+        XCTAssertGreaterThan(frame.maxX, 771.5)
+        XCTAssertLessThan(frame.maxX, 956.5)
+
+        let offsets = WorkspaceBarZoneLayout.offsets(
+            of: [(.leading, 100), (.trailing, 60)],
+            length: frame.width,
+            zones: zones,
+            spacing: 8,
+            inset: 4
+        )
+        XCTAssertEqual(offsets[0], 4)
+        XCTAssertEqual(frame.minX + offsets[1] + 60, 771.5 - 4)
+    }
+
+    func testFillLeftOfNotchOverlapIsCappedByNarrowNotchAndAbsentWithoutOne() {
+        XCTAssertEqual(
+            WorkspaceBarGeometry.fillLeftOfNotchOverlap(for: makeMonitor(notchRange: 700 ... 710)),
+            5
+        )
+        XCTAssertEqual(
+            WorkspaceBarGeometry.fillLeftOfNotchOverlap(for: makeMonitor(hasNotch: false, notchRange: nil)),
+            0
+        )
+        XCTAssertEqual(
+            WorkspaceBarGeometry.fillLeftOfNotchOverlap(for: makeMonitor(hasNotch: true, notchRange: nil)),
+            0
+        )
     }
 
     func testFillLeftOfNotchFrameWithTranslatedMonitor() throws {
@@ -145,8 +186,8 @@ final class WorkspaceBarFillLeftGeometryTests: XCTestCase {
 
         let frame = geometry.frame(fittingLength: 200, monitor: monitor, resolved: resolved)
 
-        let expectedNotchStart = monitor.notchRange?.lowerBound ?? monitor.frame.midX
-        let expectedMaxX = expectedNotchStart - WorkspaceBarGeometry.notchGap
+        let expectedNotchStart = try XCTUnwrap(monitor.notchRange?.lowerBound)
+        let expectedMaxX = expectedNotchStart + WorkspaceBarGeometry.fillLeftOfNotchMaxOverlap
         let expectedWidth = max(0, expectedMaxX - monitor.frame.minX)
 
         XCTAssertEqual(frame.minX, monitor.frame.minX)
@@ -170,8 +211,8 @@ final class WorkspaceBarFillLeftGeometryTests: XCTestCase {
 
         let frame = geometry.frame(fittingLength: 200, monitor: monitor, resolved: resolved)
 
-        let expectedNotchStart = monitor.notchRange?.lowerBound ?? monitor.frame.midX
-        let expectedMaxX = expectedNotchStart - WorkspaceBarGeometry.notchGap
+        let expectedNotchStart = try XCTUnwrap(monitor.notchRange?.lowerBound)
+        let expectedMaxX = expectedNotchStart + WorkspaceBarGeometry.fillLeftOfNotchMaxOverlap
         let expectedWidth = max(0, expectedMaxX - monitor.frame.minX)
 
         XCTAssertEqual(frame.minX, monitor.frame.minX)
