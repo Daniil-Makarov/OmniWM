@@ -51,7 +51,7 @@ final class MenuAnywhereController: NSObject, NSMenuDelegate {
     init(
         menuLoader: @escaping MenuLoader,
         menuPresenter: @escaping MenuPresenter = { menu, location in
-            menu.popUp(positioning: nil, at: location, in: nil)
+            menu.popUpAsContextMenu(at: location)
         },
         makeMenu: @escaping @MainActor () -> NSMenu = { NSMenu() },
         submenuLoader: @escaping SubmenuLoader
@@ -185,3 +185,4 @@ final class MenuAnywhereController: NSObject, NSMenuDelegate {
         return item
     }
 }
+

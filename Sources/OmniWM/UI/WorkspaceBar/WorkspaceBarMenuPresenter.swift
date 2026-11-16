@@ -27,7 +27,7 @@ final class WorkspaceBarMenuPresenter: NSObject {
             activeMenu = nil
             actions.removeAll(keepingCapacity: true)
         }
-        menu.popUp(positioning: nil, at: location, in: view)
+        menu.popUpAsContextMenu(at: location, in: view)
         return selectedAction
     }
 
