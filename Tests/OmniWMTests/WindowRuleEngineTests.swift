@@ -31,7 +31,8 @@ final class WindowRuleEngineTests: XCTestCase {
         windowServer: WindowServerInfo? = nil,
         attributeFetchSucceeded: Bool = true,
         isMain: Bool? = false,
-        isModal: Bool? = false
+        isModal: Bool? = false,
+        zoomButtonEnabled: Bool? = nil
     ) -> WindowRuleFacts {
         WindowRuleFacts(
             appName: appName,
@@ -48,7 +49,8 @@ final class WindowRuleEngineTests: XCTestCase {
                 bundleId: bundleId,
                 attributeFetchSucceeded: attributeFetchSucceeded,
                 isMain: isMain,
-                isModal: isModal
+                isModal: isModal,
+                zoomButtonEnabled: zoomButtonEnabled
             ),
             sizeConstraints: nil,
             windowServer: windowServer
@@ -228,6 +230,85 @@ final class WindowRuleEngineTests: XCTestCase {
 
         XCTAssertEqual(decision.disposition, .managed)
         XCTAssertEqual(decision.source, .builtInRule("steamClient"))
+    }
+
+    private func resizableWithoutFullscreenFacts(
+        bundleId: String,
+        subrole: String = kAXStandardWindowSubrole as String,
+        zoomButtonEnabled: Bool? = true,
+        isModal: Bool? = false,
+        windowServerLevel: Int32 = 0
+    ) -> WindowRuleFacts {
+        let token = WindowToken(pid: 6_577, windowId: 355)
+        return facts(
+            appName: "Activity Monitor",
+            bundleId: bundleId,
+            title: "Activity Monitor – All Processes",
+            subrole: subrole,
+            hasFullscreenButton: false,
+            windowServer: transientWindowServerInfo(
+                token: token,
+                frame: CGRect(x: 49, y: 95, width: 1728, height: 1084),
+                level: windowServerLevel,
+                tags: 0,
+                attributes: 0,
+                parentId: 0
+            ),
+            isMain: true,
+            isModal: isModal,
+            zoomButtonEnabled: zoomButtonEnabled
+        )
+    }
+
+    func testResizableWindowWithoutFullscreenButtonTilesForRegisteredApps() {
+        let engine = WindowRuleEngine()
+        for bundleId in ["com.apple.ActivityMonitor", "com.unity3d.UnityEditor5.x"] {
+            let decision = evaluate(engine, resizableWithoutFullscreenFacts(bundleId: bundleId))
+
+            XCTAssertEqual(decision.disposition, .managed, bundleId)
+            XCTAssertEqual(
+                decision.source,
+                .builtInRule(WindowRuleEngine.resizableWithoutFullscreenWindowRuleName),
+                bundleId
+            )
+            XCTAssertEqual(decision.heuristicReasons, [], bundleId)
+        }
+    }
+
+    func testResizableWithoutFullscreenRegistryKeepsNonResizableAndNonDocumentWindowsFloating() {
+        let engine = WindowRuleEngine()
+        let bundleId = "com.apple.ActivityMonitor"
+        let cases: [(String, WindowRuleFacts)] = [
+            ("zoomDisabled", resizableWithoutFullscreenFacts(bundleId: bundleId, zoomButtonEnabled: false)),
+            ("zoomUnknown", resizableWithoutFullscreenFacts(bundleId: bundleId, zoomButtonEnabled: nil)),
+            ("modal", resizableWithoutFullscreenFacts(bundleId: bundleId, isModal: true)),
+            (
+                "floatingSubrole",
+                resizableWithoutFullscreenFacts(bundleId: bundleId, subrole: kAXFloatingWindowSubrole as String)
+            ),
+            ("elevatedLevel", resizableWithoutFullscreenFacts(bundleId: bundleId, windowServerLevel: 3)),
+            ("unregisteredApp", resizableWithoutFullscreenFacts(bundleId: "com.apple.systempreferences"))
+        ]
+        for (label, facts) in cases {
+            let decision = evaluate(engine, facts)
+
+            XCTAssertNotEqual(
+                decision.source,
+                .builtInRule(WindowRuleEngine.resizableWithoutFullscreenWindowRuleName),
+                label
+            )
+            XCTAssertEqual(decision.disposition, .floating, label)
+        }
+    }
+
+    func testUserFloatRuleOverridesResizableWithoutFullscreenRegistry() {
+        let engine = WindowRuleEngine()
+        let rule = AppRule(bundleId: "com.apple.ActivityMonitor", layout: .float)
+        engine.rebuild(rules: [rule])
+        let decision = evaluate(engine, resizableWithoutFullscreenFacts(bundleId: "com.apple.ActivityMonitor"))
+
+        XCTAssertEqual(decision.disposition, .floating)
+        XCTAssertEqual(decision.source, .userRule(rule.id))
     }
 
     func testSteamBuiltInDoesNotTileTheNonHelperBundle() {

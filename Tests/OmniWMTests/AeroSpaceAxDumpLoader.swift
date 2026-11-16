@@ -87,7 +87,8 @@ enum AeroSpaceAxDumpLoader {
             bundleId: bundleId,
             attributeFetchSucceeded: true,
             isMain: bool(dump, "AXMain"),
-            isModal: bool(dump, "AXModal")
+            isModal: bool(dump, "AXModal"),
+            zoomButtonEnabled: hasElement(dump, "AXFullScreenButton") ? nil : isEnabled(dump, "AXZoomButton")
         )
         let windowServer = WindowServerInfo(
             id: UInt32(windowId),

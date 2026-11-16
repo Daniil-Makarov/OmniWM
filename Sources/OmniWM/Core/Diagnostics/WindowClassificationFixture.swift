@@ -19,6 +19,7 @@ struct AXWindowFactsDTO: Codable, Equatable, Sendable {
     var attributeFetchSucceeded: Bool
     var isMain: Bool?
     var isModal: Bool?
+    var zoomButtonEnabled: Bool?
 
     init(from model: AXWindowFacts) {
         role = model.role
@@ -34,6 +35,7 @@ struct AXWindowFactsDTO: Codable, Equatable, Sendable {
         attributeFetchSucceeded = model.attributeFetchSucceeded
         isMain = model.isMain
         isModal = model.isModal
+        zoomButtonEnabled = model.zoomButtonEnabled
     }
 
     private static func string(from policy: NSApplication.ActivationPolicy) -> String {

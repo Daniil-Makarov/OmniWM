@@ -10,6 +10,7 @@ final class WindowRuleEngine {
     nonisolated static let externalSurfaceRuleName = "externalSurface"
     nonisolated static let unprovenIndependentRootRuleName = "unprovenIndependentRoot"
     nonisolated static let hiddenTitleBarWindowRuleName = "hiddenTitleBarWindow"
+    nonisolated static let resizableWithoutFullscreenWindowRuleName = "resizableWithoutFullscreenWindow"
 
     private enum Selection {
         case matched(MatchedWindowRules)
@@ -27,14 +28,17 @@ final class WindowRuleEngine {
     init(
         inputMethodBundleIds: Set<String>? = nil,
         hiddenTitleBarFullscreenButtonOptionalBundleIds: Set<String>? = nil,
-        hiddenTitleBarNonStandardSubroleBundleIds: Set<String>? = nil
+        hiddenTitleBarNonStandardSubroleBundleIds: Set<String>? = nil,
+        resizableWithoutFullscreenBundleIds: Set<String>? = nil
     ) {
         eligibilityPolicy = WindowEligibilityPolicy(
             hiddenTitleBarFullscreenButtonOptionalBundleIds: hiddenTitleBarFullscreenButtonOptionalBundleIds
                 ?? HiddenTitleBarRegistry.fullscreenButtonOptionalBundleIds,
             hiddenTitleBarNonStandardSubroleBundleIds: hiddenTitleBarNonStandardSubroleBundleIds
                 ?? HiddenTitleBarRegistry.nonStandardSubroleBundleIds,
-            inputMethodBundleIds: inputMethodBundleIds ?? InputMethodBundleRegistry.discover()
+            inputMethodBundleIds: inputMethodBundleIds ?? InputMethodBundleRegistry.discover(),
+            resizableWithoutFullscreenBundleIds: resizableWithoutFullscreenBundleIds
+                ?? ResizableWithoutFullscreenRegistry.bundleIds
         )
         builtInRules = CompiledWindowRule.makeBuiltInRules()
         titleRules = builtInRules.filter(\.requiresTitle)
@@ -143,6 +147,12 @@ final class WindowRuleEngine {
             return matches.fallbackDecision(
                 disposition: .managed,
                 source: .builtInRule(Self.hiddenTitleBarWindowRuleName)
+            )
+        }
+        if eligibilityPolicy.acceptsResizableWithoutFullscreen(facts) {
+            return matches.fallbackDecision(
+                disposition: .managed,
+                source: .builtInRule(Self.resizableWithoutFullscreenWindowRuleName)
             )
         }
         return matches.heuristicDecision(for: facts)

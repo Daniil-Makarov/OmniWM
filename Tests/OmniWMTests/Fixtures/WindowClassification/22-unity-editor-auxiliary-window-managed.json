@@ -1,0 +1,55 @@
+{
+  "observation": {
+    "tokenPid": 1000,
+    "tokenWindowId": 22,
+    "appName": "Unity",
+    "bundleId": "com.unity3d.UnityEditor5.x",
+    "rulesRevision": 1,
+    "input": {
+      "appName": "Unity",
+      "ax": {
+        "role": "AXWindow",
+        "subrole": "AXStandardWindow",
+        "title": "Profiler",
+        "hasCloseButton": true,
+        "hasFullscreenButton": false,
+        "hasZoomButton": true,
+        "hasMinimizeButton": true,
+        "appPolicy": "regular",
+        "bundleId": "com.unity3d.UnityEditor5.x",
+        "attributeFetchSucceeded": true,
+        "isMain": true,
+        "isModal": false,
+        "zoomButtonEnabled": true
+      },
+      "windowServer": {
+        "id": 22,
+        "pid": 1000,
+        "level": 0,
+        "frameX": 200,
+        "frameY": 120,
+        "frameWidth": 1280,
+        "frameHeight": 800,
+        "tags": 0,
+        "attributes": 0,
+        "parentId": 0
+      },
+      "appFullscreen": false
+    },
+    "observedDecision": {
+      "disposition": "floating",
+      "source": "heuristic",
+      "heuristicReasons": [
+        "missingFullscreenButton"
+      ],
+      "layoutDecisionKind": "fallbackLayout"
+    }
+  },
+  "rules": [],
+  "expectedDecision": {
+    "disposition": "managed",
+    "source": "builtInRule(resizableWithoutFullscreenWindow)",
+    "heuristicReasons": [],
+    "layoutDecisionKind": "fallbackLayout"
+  }
+}

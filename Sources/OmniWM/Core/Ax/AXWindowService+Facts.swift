@@ -76,6 +76,11 @@ extension AXWindowService {
 
         let fullscreenButtonValue = attributeValue(.fullScreenButton)
         let buttonState = fullscreenButtonState(fullscreenButtonValue)
+        let zoomButtonValue = attributeValue(.zoomButton)
+        let zoomButtonEnabled = needsZoomButtonEnabledState(
+            fullscreenButton: fullscreenButtonValue,
+            zoomButton: zoomButtonValue
+        ) ? zoomButtonEnabledState(zoomButtonValue) : nil
         return makeWindowFacts(
             AXWindowFactAttributeValues(
                 role: AXAttributeValue.stringValue(attributeValue(.role)),
@@ -84,10 +89,11 @@ extension AXWindowService {
                 closeButton: attributeValue(.closeButton),
                 fullscreenButton: fullscreenButtonValue,
                 fullscreenButtonEnabled: buttonState.enabled,
-                zoomButton: attributeValue(.zoomButton),
+                zoomButton: zoomButtonValue,
                 minimizeButton: attributeValue(.minimizeButton),
                 main: attributeValue(.main),
-                modal: attributeValue(.modal)
+                modal: attributeValue(.modal),
+                zoomButtonEnabled: zoomButtonEnabled
             ),
             appPolicy: appPolicy,
             bundleId: bundleId,
@@ -106,6 +112,21 @@ extension AXWindowService {
             &enabledValue
         )
         return fullscreenButtonEnabledState(result: result, value: enabledValue)
+    }
+
+    /// The zoom button's enabled state is only consulted for windows that lack a fullscreen button,
+    /// so the extra AX round trip is skipped for the common fullscreen-capable window.
+    static func needsZoomButtonEnabledState(fullscreenButton: Any?, zoomButton: Any?) -> Bool {
+        guard case .absent = fullscreenButtonEvidence(fullscreenButton) else { return false }
+        return resolvedAttribute(zoomButton)
+    }
+
+    private static func zoomButtonEnabledState(_ value: CFTypeRef?) -> Bool? {
+        guard let value, CFGetTypeID(value) == AXUIElementGetTypeID() else { return nil }
+        let button = unsafeDowncast(value, to: AXUIElement.self)
+        var enabledValue: CFTypeRef?
+        let result = AXUIElementCopyAttributeValue(button, kAXEnabledAttribute as CFString, &enabledValue)
+        return fullscreenButtonEnabledState(result: result, value: enabledValue).enabled
     }
 
     static func fullscreenButtonEnabledState(
@@ -145,7 +166,8 @@ extension AXWindowService {
             bundleId: bundleId,
             attributeFetchSucceeded: attributeFetchSucceeded,
             isMain: attributes.main as? Bool,
-            isModal: attributes.modal as? Bool
+            isModal: attributes.modal as? Bool,
+            zoomButtonEnabled: attributes.zoomButtonEnabled
         )
     }
 

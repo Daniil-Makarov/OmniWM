@@ -21,7 +21,8 @@ extension AXWindowFactsDTO {
             bundleId: bundleId,
             attributeFetchSucceeded: attributeFetchSucceeded,
             isMain: isMain,
-            isModal: isModal
+            isModal: isModal,
+            zoomButtonEnabled: zoomButtonEnabled
         )
     }
 

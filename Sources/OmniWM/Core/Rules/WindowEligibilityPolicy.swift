@@ -24,6 +24,7 @@ struct WindowEligibilityPolicy {
     let hiddenTitleBarFullscreenButtonOptionalBundleIds: Set<String>
     let hiddenTitleBarNonStandardSubroleBundleIds: Set<String>
     let inputMethodBundleIds: Set<String>
+    let resizableWithoutFullscreenBundleIds: Set<String>
 
     func isExternalSurface(_ facts: WindowRuleFacts) -> Bool {
         if facts.ax.role == (kAXHelpTagRole as String) {
@@ -76,6 +77,14 @@ struct WindowEligibilityPolicy {
             windowServer: facts.windowServer,
             fullscreenButtonOptionalBundleIds: hiddenTitleBarFullscreenButtonOptionalBundleIds,
             nonStandardSubroleBundleIds: hiddenTitleBarNonStandardSubroleBundleIds
+        )
+    }
+
+    func acceptsResizableWithoutFullscreen(_ facts: WindowRuleFacts) -> Bool {
+        ResizableWithoutFullscreenRegistry.decision(
+            for: facts.ax,
+            windowServer: facts.windowServer,
+            bundleIds: resizableWithoutFullscreenBundleIds
         )
     }
 

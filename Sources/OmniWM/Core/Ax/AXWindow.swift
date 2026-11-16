@@ -65,6 +65,9 @@ struct AXWindowFacts: Equatable, Sendable {
     let attributeFetchSucceeded: Bool
     var isMain: Bool?
     var isModal: Bool?
+    /// Enabled state of the zoom button. Only read when the window exposes a zoom button but no
+    /// fullscreen button, where it is the evidence that the window is user-resizable.
+    var zoomButtonEnabled: Bool?
 }
 
 struct AXWindowDecisionEvidence: Equatable, Sendable {
@@ -107,6 +110,7 @@ struct AXWindowFactAttributeValues {
     let minimizeButton: Any?
     var main: Any?
     var modal: Any?
+    var zoomButtonEnabled: Bool?
 }
 
 struct AXWindowConstraintInputs {

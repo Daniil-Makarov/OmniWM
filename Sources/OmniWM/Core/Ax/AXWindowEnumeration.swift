@@ -367,6 +367,15 @@ enum AXWindowEnumerationInspector {
             deadline: context.deadline,
             checkCancellation: checkCancellation
         )
+        let zoomButtonValue = value(at: 7, in: values)
+        let zoomButtonEnabled = AXWindowService.needsZoomButtonEnabledState(
+            fullscreenButton: fullscreenButtonValue,
+            zoomButton: zoomButtonValue
+        ) ? try buttonEnabled(
+            zoomButtonValue,
+            deadline: context.deadline,
+            checkCancellation: checkCancellation
+        ) : nil
         let facts = AXWindowService.makeWindowFacts(
             AXWindowFactAttributeValues(
                 role: value(at: 0, in: values) as? String,
@@ -375,10 +384,11 @@ enum AXWindowEnumerationInspector {
                 closeButton: value(at: 5, in: values),
                 fullscreenButton: fullscreenButtonValue,
                 fullscreenButtonEnabled: fullscreenButtonState.enabled,
-                zoomButton: value(at: 7, in: values),
+                zoomButton: zoomButtonValue,
                 minimizeButton: value(at: 8, in: values),
                 main: value(at: 12, in: values),
-                modal: value(at: 13, in: values)
+                modal: value(at: 13, in: values),
+                zoomButtonEnabled: zoomButtonEnabled
             ),
             appPolicy: context.inspection.appPolicy,
             bundleId: context.inspection.bundleId,
@@ -415,6 +425,25 @@ enum AXWindowEnumerationInspector {
         )
         try checkCancellation()
         return AXWindowService.fullscreenButtonEnabledState(result: result, value: enabledValue)
+    }
+
+    private static func buttonEnabled(
+        _ value: Any?,
+        deadline: TimeInterval,
+        checkCancellation: () throws -> Void
+    ) throws -> Bool? {
+        guard let value, CFGetTypeID(value as CFTypeRef) == AXUIElementGetTypeID() else { return nil }
+        let button = unsafeDowncast(value as CFTypeRef, to: AXUIElement.self)
+        try setRemainingTimeout(on: button, until: deadline)
+        defer { AXUIElementSetMessagingTimeout(button, 0) }
+        var enabledValue: CFTypeRef?
+        let result = AXUIElementCopyAttributeValue(
+            button,
+            kAXEnabledAttribute as CFString,
+            &enabledValue
+        )
+        try checkCancellation()
+        return AXWindowService.fullscreenButtonEnabledState(result: result, value: enabledValue).enabled
     }
 
     private static func admissionGeometry(

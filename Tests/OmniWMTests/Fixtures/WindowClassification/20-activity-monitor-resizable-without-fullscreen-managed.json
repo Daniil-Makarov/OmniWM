@@ -1,0 +1,55 @@
+{
+  "observation": {
+    "tokenPid": 1000,
+    "tokenWindowId": 20,
+    "appName": "Activity Monitor",
+    "bundleId": "com.apple.ActivityMonitor",
+    "rulesRevision": 1,
+    "input": {
+      "appName": "Activity Monitor",
+      "ax": {
+        "role": "AXWindow",
+        "subrole": "AXStandardWindow",
+        "title": "Activity Monitor – All Processes",
+        "hasCloseButton": true,
+        "hasFullscreenButton": false,
+        "hasZoomButton": true,
+        "hasMinimizeButton": true,
+        "appPolicy": "regular",
+        "bundleId": "com.apple.ActivityMonitor",
+        "attributeFetchSucceeded": true,
+        "isMain": true,
+        "isModal": false,
+        "zoomButtonEnabled": true
+      },
+      "windowServer": {
+        "id": 20,
+        "pid": 1000,
+        "level": 0,
+        "frameX": 49,
+        "frameY": 95,
+        "frameWidth": 1728,
+        "frameHeight": 1084,
+        "tags": 0,
+        "attributes": 0,
+        "parentId": 0
+      },
+      "appFullscreen": false
+    },
+    "observedDecision": {
+      "disposition": "floating",
+      "source": "heuristic",
+      "heuristicReasons": [
+        "missingFullscreenButton"
+      ],
+      "layoutDecisionKind": "fallbackLayout"
+    }
+  },
+  "rules": [],
+  "expectedDecision": {
+    "disposition": "managed",
+    "source": "builtInRule(resizableWithoutFullscreenWindow)",
+    "heuristicReasons": [],
+    "layoutDecisionKind": "fallbackLayout"
+  }
+}
